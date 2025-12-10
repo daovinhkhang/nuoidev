@@ -69,6 +69,14 @@
       "senderName": "khang",
       "message": "sdsd",
       "createdAt": "2025-12-10T11:00:56.963Z"
+    },
+    {
+      "id": "msg_1765364789673_3eswyaz6q",
+      "userId": "user_1765359873360_fuh69sn5z",
+      "senderName": "khangdeptrai",
+      "senderAvatar": "/uploads/avatar_1765359871558_uv9a1cx2o.jpeg",
+      "message": "hi",
+      "createdAt": "2025-12-10T11:06:29.673Z"
     }
   ]
 }

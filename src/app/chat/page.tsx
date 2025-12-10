@@ -11,7 +11,6 @@ export default function ChatPage() {
     const { user } = useAuth();
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [newMessage, setNewMessage] = useState('');
-    const [guestName, setGuestName] = useState('');
     const [sending, setSending] = useState(false);
     const [replyTo, setReplyTo] = useState<ChatMessage | null>(null);
     const [pinnedMessages, setPinnedMessages] = useState<ChatMessage[]>([]);
