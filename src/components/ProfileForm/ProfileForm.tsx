@@ -82,10 +82,16 @@ export default function ProfileForm({ profile, onSubmit, isLoading }: ProfileFor
         }
 
         setUploadingGallery(true);
+
         try {
-            for (let i = 0; i < Math.min(files.length, 3 - galleryImages.length); i++) {
+            const filesToUpload = Array.from(files).slice(0, 3 - galleryImages.length);
+
+            for (let i = 0; i < filesToUpload.length; i++) {
+                const file = filesToUpload[i];
+
+                // Upload to server
                 const formData = new FormData();
-                formData.append('file', files[i]);
+                formData.append('file', file);
 
                 const res = await fetch('/api/upload', {
                     method: 'POST',
@@ -94,11 +100,18 @@ export default function ProfileForm({ profile, onSubmit, isLoading }: ProfileFor
 
                 if (res.ok) {
                     const data = await res.json();
+                    // Only add to gallery if upload successful
                     setGalleryImages(prev => [...prev, data.url]);
+                } else {
+                    const error = await res.json();
+                    console.error('Upload failed:', error);
+                    alert(`Upload ảnh ${i + 1} thất bại: ${error.error || 'Lỗi không xác định'}`);
+                    break; // Stop uploading if one fails
                 }
             }
         } catch (error) {
             console.error('Gallery upload error:', error);
+            alert('Có lỗi khi upload ảnh gallery!');
         } finally {
             setUploadingGallery(false);
             if (galleryInputRef.current) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
@@ -19,9 +19,13 @@ export default function RegisterPage() {
     const [uploading, setUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Redirect if already logged in
+    useEffect(() => {
+        if (user) {
+            router.replace('/');
+        }
+    }, [user, router]);
+
     if (user) {
-        router.push('/');
         return null;
     }
 

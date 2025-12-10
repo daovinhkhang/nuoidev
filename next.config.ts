@@ -12,6 +12,7 @@ const nextConfig = {
         hostname: '**',
       },
     ],
+    unoptimized: true, // Disable image optimization to prevent preload warnings
   },
   // Disable strict mode to prevent double renders in development
   reactStrictMode: true,
