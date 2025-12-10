@@ -5,6 +5,12 @@
       "profileId": "profile_1765357737058_uzpdmvr20",
       "voterId": "visitor_1765359160584_nozgaeb7o",
       "createdAt": "2025-12-10T09:35:18.981Z"
+    },
+    {
+      "id": "vote_1765364221424_d39730hgt",
+      "profileId": "profile_1765364176924_94en3tab0",
+      "voterId": "visitor_1765359160584_nozgaeb7o",
+      "createdAt": "2025-12-10T10:57:01.424Z"
     }
   ]
 }

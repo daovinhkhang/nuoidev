@@ -55,6 +55,20 @@
       "senderName": "khangdeptrai",
       "message": "ihih",
       "createdAt": "2025-12-10T09:46:49.687Z"
+    },
+    {
+      "id": "msg_1765364430580_x2ri7y744",
+      "userId": "user_1765363755077_zg7pzm2ai",
+      "senderName": "vip",
+      "senderAvatar": "/uploads/avatar_1765363744462_nepxud6qe.jpeg",
+      "message": "hi",
+      "createdAt": "2025-12-10T11:00:30.580Z"
+    },
+    {
+      "id": "msg_1765364456963_i6brbclls",
+      "senderName": "khang",
+      "message": "sdsd",
+      "createdAt": "2025-12-10T11:00:56.963Z"
     }
   ]
 }

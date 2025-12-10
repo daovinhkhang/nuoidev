@@ -33,17 +33,20 @@ export async function POST(request: NextRequest) {
         // Check if user is logged in
         const sessionCookie = request.cookies.get('session');
         let userId: string | undefined;
+        let profileId: string | undefined;
         let avatar: string | undefined = senderAvatar;
 
         if (sessionCookie?.value) {
             const session: UserSession = JSON.parse(sessionCookie.value);
             userId = session.userId;
+            profileId = session.profileId;
             avatar = session.avatar || senderAvatar;
         }
 
         const chatMessage: ChatMessage = {
             id: generateId('msg'),
             userId,
+            profileId,
             senderName: senderName.trim().substring(0, 30),
             senderAvatar: avatar,
             message: message.trim().substring(0, 500),

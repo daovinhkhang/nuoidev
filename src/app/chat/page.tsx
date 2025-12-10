@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import styles from './page.module.css';
 import { ChatMessage } from '@/types/profile';
 import { useAuth } from '@/context/AuthContext';
@@ -70,9 +71,9 @@ export default function ChatPage() {
         e.preventDefault();
         if (!newMessage.trim() || sending) return;
 
-        const senderName = user?.displayName || guestName.trim();
-        if (!senderName) {
-            alert('Vui lòng nhập tên của bạn');
+        // Require login to chat
+        if (!user) {
+            alert('⚠️ Vui lòng đăng nhập để chat!\n\nBạn cần có tài khoản để tham gia trò chuyện.');
             return;
         }
 
@@ -83,8 +84,8 @@ export default function ChatPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     message: newMessage,
-                    senderName,
-                    senderAvatar: user?.avatar,
+                    senderName: user.displayName,
+                    senderAvatar: user.avatar,
                     replyTo: replyTo?.id,
                 }),
             });
@@ -179,12 +180,26 @@ export default function ChatPage() {
                                 >
                                     {!isOwn && (
                                         <div className={styles.messageAvatar}>
-                                            {msg.senderAvatar ? (
-                                                <img src={msg.senderAvatar} alt="" />
+                                            {msg.profileId ? (
+                                                <Link href={`/profile/${msg.profileId}`} className={styles.avatarLink}>
+                                                    {msg.senderAvatar ? (
+                                                        <img src={msg.senderAvatar} alt={msg.senderName} title={`Xem hồ sơ ${msg.senderName}`} />
+                                                    ) : (
+                                                        <div className={styles.avatarPlaceholder} title={`Xem hồ sơ ${msg.senderName}`}>
+                                                            {msg.senderName.charAt(0).toUpperCase()}
+                                                        </div>
+                                                    )}
+                                                </Link>
                                             ) : (
-                                                <div className={styles.avatarPlaceholder}>
-                                                    {msg.senderName.charAt(0).toUpperCase()}
-                                                </div>
+                                                <>
+                                                    {msg.senderAvatar ? (
+                                                        <img src={msg.senderAvatar} alt={msg.senderName} />
+                                                    ) : (
+                                                        <div className={styles.avatarPlaceholder}>
+                                                            {msg.senderName.charAt(0).toUpperCase()}
+                                                        </div>
+                                                    )}
+                                                </>
                                             )}
                                         </div>
                                     )}
@@ -246,43 +261,43 @@ export default function ChatPage() {
                 {/* Input Area */}
                 <form onSubmit={handleSubmit} className={styles.inputArea}>
                     {!user && (
-                        <input
-                            type="text"
-                            value={guestName}
-                            onChange={(e) => setGuestName(e.target.value)}
-                            placeholder="Tên của bạn"
-                            className={styles.nameInput}
-                            maxLength={30}
-                        />
-                    )}
-
-                    {user && (
-                        <div className={styles.inputAvatar}>
-                            {user.avatar ? (
-                                <img src={user.avatar} alt="" />
-                            ) : (
-                                <div className={styles.inputAvatarPlaceholder}>
-                                    {user.displayName.charAt(0)}
-                                </div>
-                            )}
+                        <div className={styles.loginPrompt}>
+                            <span>Vui lòng đăng nhập để chat</span>
+                            <Link href="/login" className={styles.loginLink}>
+                                Đăng nhập
+                            </Link>
                         </div>
                     )}
 
-                    <input
-                        type="text"
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        placeholder={replyTo ? `Trả lời ${replyTo.senderName}...` : "Nhập tin nhắn..."}
-                        className={styles.messageInput}
-                        maxLength={500}
-                    />
-                    <button
-                        type="submit"
-                        className={styles.sendBtn}
-                        disabled={sending || !newMessage.trim()}
-                    >
-                        {sending ? '...' : 'Gửi'}
-                    </button>
+                    {user && (
+                        <>
+                            <div className={styles.inputAvatar}>
+                                {user.avatar ? (
+                                    <img src={user.avatar} alt="" />
+                                ) : (
+                                    <div className={styles.inputAvatarPlaceholder}>
+                                        {user.displayName.charAt(0)}
+                                    </div>
+                                )}
+                            </div>
+
+                            <input
+                                type="text"
+                                value={newMessage}
+                                onChange={(e) => setNewMessage(e.target.value)}
+                                placeholder={replyTo ? `Trả lời ${replyTo.senderName}...` : "Nhập tin nhắn..."}
+                                className={styles.messageInput}
+                                maxLength={500}
+                            />
+                            <button
+                                type="submit"
+                                className={styles.sendBtn}
+                                disabled={sending || !newMessage.trim()}
+                            >
+                                {sending ? '...' : 'Gửi'}
+                            </button>
+                        </>
+                    )}
                 </form>
             </div>
         </div>

@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
             funFacts: body.funFacts || [],
             catchphrase: body.catchphrase || '',
             mood: body.mood || 'happy',
+            galleryImages: body.galleryImages || [],
             level: 1,
             xp: 0,
             votes: 0,

@@ -123,6 +123,7 @@ export interface ChatMessage {
     id: string;
     roomId?: string; // For different chat rooms
     userId?: string;
+    profileId?: string; // Link to user's profile
     senderName: string;
     senderAvatar?: string;
     message: string;
