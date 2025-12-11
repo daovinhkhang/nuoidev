@@ -35,7 +35,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
             return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
         }
 
-        // Check if user is logged in and is the owner
+        // Check if user is logged in
         const sessionCookie = request.cookies.get('session');
         if (!sessionCookie?.value) {
             return NextResponse.json({ error: 'Vui lòng đăng nhập để chỉnh sửa' }, { status: 401 });
@@ -43,8 +43,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
         const session: UserSession = JSON.parse(sessionCookie.value);
 
-        // Check ownership - only owner can edit
-        if (profile.userId && profile.userId !== session.userId) {
+        // Check ownership
+        if (!profile.userId || profile.userId !== session.userId) {
             return NextResponse.json({ error: 'Bạn không có quyền chỉnh sửa hồ sơ này' }, { status: 403 });
         }
 
@@ -56,7 +56,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         const updated = await updateProfile(id, body);
 
         if (!updated) {
-            return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
+            return NextResponse.json({ error: 'Update failed' }, { status: 500 });
         }
 
         return NextResponse.json(updated);
@@ -77,7 +77,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
             return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
         }
 
-        // Check if user is logged in and is the owner
+        // Check if user is logged in
         const sessionCookie = request.cookies.get('session');
         if (!sessionCookie?.value) {
             return NextResponse.json({ error: 'Vui lòng đăng nhập' }, { status: 401 });
@@ -86,14 +86,14 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
         const session: UserSession = JSON.parse(sessionCookie.value);
 
         // Check ownership
-        if (profile.userId && profile.userId !== session.userId) {
+        if (!profile.userId || profile.userId !== session.userId) {
             return NextResponse.json({ error: 'Bạn không có quyền xoá hồ sơ này' }, { status: 403 });
         }
 
         const deleted = await deleteProfile(id);
 
         if (!deleted) {
-            return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
+            return NextResponse.json({ error: 'Delete failed' }, { status: 500 });
         }
 
         return NextResponse.json({ message: 'Profile deleted successfully' });
