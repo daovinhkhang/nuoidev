@@ -3,6 +3,8 @@ import { getAllProfiles, createProfile, generateId, updateUser, getUserById } fr
 import { Profile, CreateProfileDTO, UserSession, Rank } from '@/types/profile';
 import { getRandomPlaceholderAvatar, defaultAchievements } from '@/lib/utils';
 
+export const dynamic = 'force-dynamic';
+
 // GET all profiles
 export async function GET() {
     try {
