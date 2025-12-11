@@ -42,7 +42,7 @@ create table if not exists posts (
   author_avatar text,
   content text not null,
   type text default 'normal', -- 'normal' | 'support_call'
-  target_profile_id text references profiles(id),
+  target_profile_id text references profiles(id) on delete set null,
   images jsonb default '[]'::jsonb,
   likes integer default 0,
   liked_by jsonb default '[]'::jsonb, -- array of user ids
@@ -65,7 +65,7 @@ create table if not exists comments (
 -- Votes table
 create table if not exists votes (
   id text primary key,
-  profile_id text references profiles(id),
+  profile_id text references profiles(id) on delete cascade,
   voter_id text not null, -- IP or session ID for anonymous voting
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
@@ -75,7 +75,7 @@ create table if not exists chat_messages (
   id text primary key,
   room_id text,
   user_id text references users(id),
-  profile_id text references profiles(id),
+  profile_id text references profiles(id) on delete set null,
   sender_name text not null,
   sender_avatar text,
   message text not null,

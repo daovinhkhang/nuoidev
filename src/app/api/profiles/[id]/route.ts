@@ -98,7 +98,19 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
             return NextResponse.json({ error: 'Delete failed' }, { status: 500 });
         }
 
-        return NextResponse.json({ message: 'Profile deleted successfully' });
+        // Remove profileId from session cookie
+        const newSession = { ...session, profileId: undefined };
+        const response = NextResponse.json({ message: 'Profile deleted successfully' });
+
+        response.cookies.set('session', JSON.stringify(newSession), {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 30,
+            path: '/',
+        });
+
+        return response;
     } catch (error) {
         console.error('Error deleting profile:', error);
         return NextResponse.json({ error: 'Failed to delete profile' }, { status: 500 });

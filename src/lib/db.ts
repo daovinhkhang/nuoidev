@@ -145,9 +145,21 @@ export async function updateProfile(id: string, updates: Partial<Profile>): Prom
     return mapProfile(data);
 }
 
+// DELETE profile
 export async function deleteProfile(id: string): Promise<boolean> {
     const { error } = await supabase.from('profiles').delete().eq('id', id);
-    return !error;
+    if (error) {
+        console.error('Error deleting profile:', error);
+        return false;
+    }
+
+    // After deleting profile, unlink it from the user
+    const { error: userError } = await supabase.from('users').update({ profile_id: null }).eq('profile_id', id);
+    if (userError) {
+        console.error('Error unlinking user from profile:', userError);
+    }
+
+    return true;
 }
 
 export async function getTopProfiles(limit: number = 10): Promise<Profile[]> {
