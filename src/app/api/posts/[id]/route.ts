@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { likePost, deletePost, getPostById, updatePost, generateId } from '@/lib/db';
+import { likePost, deletePost, getPostById, updatePost, generateId, addComment } from '@/lib/db';
 import { UserSession, Comment } from '@/types/profile';
 
 interface RouteParams {
@@ -10,7 +10,7 @@ interface RouteParams {
 export async function POST(request: NextRequest, { params }: RouteParams) {
     try {
         const { id } = await params;
-        const post = likePost(id);
+        const post = await likePost(id);
 
         if (!post) {
             return NextResponse.json({ error: 'Không tìm thấy bài viết' }, { status: 404 });
@@ -41,7 +41,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
             return NextResponse.json({ error: 'Bình luận không được để trống' }, { status: 400 });
         }
 
-        const post = getPostById(id);
+        const post = await getPostById(id);
         if (!post) {
             return NextResponse.json({ error: 'Không tìm thấy bài viết' }, { status: 404 });
         }
@@ -57,8 +57,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
             createdAt: new Date().toISOString(),
         };
 
-        const updatedComments = [...(post.comments || []), newComment];
-        const updated = updatePost(id, { comments: updatedComments });
+        await addComment(newComment);
+        const updated = await getPostById(id);
 
         return NextResponse.json(updated);
     } catch (error) {
@@ -77,7 +77,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
         }
 
         const { id } = await params;
-        const deleted = deletePost(id);
+        const deleted = await deletePost(id);
 
         if (!deleted) {
             return NextResponse.json({ error: 'Không tìm thấy bài viết' }, { status: 404 });

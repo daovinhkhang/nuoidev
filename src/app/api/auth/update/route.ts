@@ -16,7 +16,7 @@ export async function PUT(request: NextRequest) {
         const { displayName, avatar } = body;
 
         // Update user
-        const updated = updateUser(session.userId, {
+        const updated = await updateUser(session.userId, {
             displayName: displayName?.trim() || session.displayName,
             avatar: avatar || undefined,
         });

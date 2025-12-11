@@ -10,7 +10,7 @@ interface RouteParams {
 export async function GET(request: NextRequest, { params }: RouteParams) {
     try {
         const { id } = await params;
-        const profile = getProfileById(id);
+        const profile = await getProfileById(id);
 
         if (!profile) {
             return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
@@ -30,7 +30,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         const body: UpdateProfileDTO = await request.json();
 
         // Get current profile
-        const profile = getProfileById(id);
+        const profile = await getProfileById(id);
         if (!profile) {
             return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
         }
@@ -53,7 +53,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
             body.galleryImages = body.galleryImages.slice(0, 3);
         }
 
-        const updated = updateProfile(id, body);
+        const updated = await updateProfile(id, body);
 
         if (!updated) {
             return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
@@ -72,7 +72,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
         const { id } = await params;
 
         // Get current profile
-        const profile = getProfileById(id);
+        const profile = await getProfileById(id);
         if (!profile) {
             return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
         }
@@ -90,7 +90,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
             return NextResponse.json({ error: 'Bạn không có quyền xoá hồ sơ này' }, { status: 403 });
         }
 
-        const deleted = deleteProfile(id);
+        const deleted = await deleteProfile(id);
 
         if (!deleted) {
             return NextResponse.json({ error: 'Profile not found' }, { status: 404 });

@@ -21,13 +21,13 @@ export async function POST(request: NextRequest) {
         }
 
         // Check if profile exists
-        const profile = getProfileById(profileId);
+        const profile = await getProfileById(profileId);
         if (!profile) {
             return NextResponse.json({ error: 'Không tìm thấy hồ sơ' }, { status: 404 });
         }
 
         // Check daily vote limit
-        const todayVotes = getTodayVoteCount(visitorId);
+        const todayVotes = await getTodayVoteCount(visitorId);
         if (todayVotes >= MAX_VOTES_PER_DAY) {
             return NextResponse.json({
                 error: `Bạn đã hết lượt vote hôm nay (${MAX_VOTES_PER_DAY} lượt/ngày)`,
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Check if already voted for this profile today
-        if (hasVotedToday(visitorId, profileId)) {
+        if (await hasVotedToday(visitorId, profileId)) {
             return NextResponse.json({
                 error: 'Bạn đã ủng hộ người này hôm nay rồi! Quay lại mai nhé~',
                 remainingVotes: MAX_VOTES_PER_DAY - todayVotes
@@ -51,10 +51,10 @@ export async function POST(request: NextRequest) {
             createdAt: new Date().toISOString(),
         };
 
-        addVote(vote);
+        await addVote(vote);
 
         // Update profile votes and rank
-        const updatedProfile = updateProfileVotesAndRank(profileId);
+        const updatedProfile = await updateProfileVotesAndRank(profileId);
 
         return NextResponse.json({
             message: 'Ủng hộ thành công!',
@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ remainingVotes: MAX_VOTES_PER_DAY });
         }
 
-        const todayVotes = getTodayVoteCount(visitorId);
+        const todayVotes = await getTodayVoteCount(visitorId);
         return NextResponse.json({
             remainingVotes: Math.max(0, MAX_VOTES_PER_DAY - todayVotes),
             todayVotes

@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Check if username exists
-        const existingUser = getUserByUsername(username);
+        const existingUser = await getUserByUsername(username);
         if (existingUser) {
             return NextResponse.json({ error: 'Username đã tồn tại' }, { status: 400 });
         }
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
             createdAt: new Date().toISOString(),
         };
 
-        createUser(newUser);
+        await createUser(newUser);
 
         // Create session cookie
         const session = {

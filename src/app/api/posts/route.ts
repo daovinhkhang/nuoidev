@@ -5,7 +5,7 @@ import { Post, UserSession } from '@/types/profile';
 // GET - Get all posts
 export async function GET() {
     try {
-        const posts = getAllPosts();
+        const posts = await getAllPosts();
         return NextResponse.json(posts);
     } catch (error) {
         console.error('Get posts error:', error);
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
         // Get author's profile avatar if they have one
         let authorAvatar: string | undefined = session.avatar;
         if (session.profileId) {
-            const profile = getProfileById(session.profileId);
+            const profile = await getProfileById(session.profileId);
             if (profile) {
                 authorAvatar = profile.avatar;
             }
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
 
         // If it's a support call, verify target profile exists
         if (type === 'support_call' && targetProfileId) {
-            const targetProfile = getProfileById(targetProfileId);
+            const targetProfile = await getProfileById(targetProfileId);
             if (!targetProfile) {
                 return NextResponse.json({ error: 'Không tìm thấy hồ sơ' }, { status: 404 });
             }
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
             createdAt: new Date().toISOString(),
         };
 
-        const created = createPost(post);
+        const created = await createPost(post);
         return NextResponse.json(created, { status: 201 });
     } catch (error) {
         console.error('Create post error:', error);

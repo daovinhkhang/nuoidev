@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
         const { searchParams } = new URL(request.url);
         const limit = parseInt(searchParams.get('limit') || '200');
 
-        const messages = getChatMessages(limit);
+        const messages = await getChatMessages(limit);
         return NextResponse.json(messages);
     } catch (error) {
         console.error('Get chat error:', error);
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
             createdAt: new Date().toISOString(),
         };
 
-        const created = addChatMessage(chatMessage);
+        const created = await addChatMessage(chatMessage);
         return NextResponse.json(created, { status: 201 });
     } catch (error) {
         console.error('Send chat error:', error);

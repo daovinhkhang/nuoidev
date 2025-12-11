@@ -6,7 +6,7 @@ import { getRandomPlaceholderAvatar, defaultAchievements } from '@/lib/utils';
 // GET all profiles
 export async function GET() {
     try {
-        const profiles = getAllProfiles();
+        const profiles = await getAllProfiles();
         return NextResponse.json(profiles);
     } catch (error) {
         console.error('Error fetching profiles:', error);
@@ -57,11 +57,14 @@ export async function POST(request: NextRequest) {
             userId: session?.userId,
         };
 
-        const created = createProfile(newProfile);
+        const created = await createProfile(newProfile);
+        if (!created) {
+            return NextResponse.json({ error: 'Failed to create profile' }, { status: 500 });
+        }
 
         // If user is logged in, link profile to user
         if (session?.userId) {
-            updateUser(session.userId, { profileId: created.id });
+            await updateUser(session.userId, { profileId: created.id });
 
             // Update session cookie with profileId
             const updatedSession = { ...session, profileId: created.id };

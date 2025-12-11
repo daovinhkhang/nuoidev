@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
         const session: UserSession = JSON.parse(sessionCookie.value);
 
         // Verify user still exists
-        const user = getUserById(session.userId);
+        const user = await getUserById(session.userId);
         if (!user) {
             const response = NextResponse.json({ user: null });
             response.cookies.set('session', '', { maxAge: 0, path: '/' });
