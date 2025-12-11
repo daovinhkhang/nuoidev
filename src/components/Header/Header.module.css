@@ -14,7 +14,7 @@
 .container {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 10px 24px;
+    padding: 12px 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -195,6 +195,7 @@
     .container {
         flex-wrap: wrap;
         gap: 12px;
+        padding: 12px 16px;
     }
 
     .nav {
@@ -209,6 +210,10 @@
 }
 
 @media (max-width: 480px) {
+    .container {
+        padding: 14px 12px;
+    }
+
     .navLink {
         padding: 6px 10px;
         font-size: 0.8rem;
@@ -216,7 +221,12 @@
 
     .loginBtn,
     .registerBtn {
-        padding: 6px 12px;
+        padding: 8px 14px;
         font-size: 0.8rem;
+    }
+
+    .logoText,
+    .logoDev {
+        font-size: 1.2rem;
     }
 }

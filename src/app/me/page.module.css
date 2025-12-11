@@ -1,7 +1,7 @@
 .container {
     max-width: 600px;
     margin: 0 auto;
-    padding: 40px 24px 80px;
+    padding: 80px 24px 80px;
 }
 
 .card {
@@ -153,7 +153,8 @@
 
 .actions {
     display: flex;
-    gap: 10px;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 .editBtn,
@@ -224,13 +225,16 @@
 .editProfileBtn,
 .createProfileBtn {
     display: inline-block;
-    padding: 10px 22px;
+    padding: 12px 24px;
     border-radius: 10px;
     font-size: 0.9rem;
     font-weight: 600;
     text-decoration: none;
-    margin: 0 5px;
+    margin: 6px 5px;
     transition: all 0.3s ease;
+    flex: 1;
+    min-width: 150px;
+    text-align: center;
 }
 
 .viewProfileBtn {
@@ -277,6 +281,19 @@
 }
 
 @media (max-width: 500px) {
+    .container {
+        padding: 75px 16px 80px;
+    }
+
+    .card {
+        padding: 24px 20px;
+        border-radius: 16px;
+    }
+
+    .title {
+        font-size: 1.5rem;
+    }
+
     .profileSection {
         flex-direction: column;
         align-items: center;
@@ -289,5 +306,30 @@
 
     .actions {
         justify-content: center;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .editBtn,
+    .saveBtn,
+    .cancelBtn {
+        width: 100%;
+        padding: 12px 20px;
+    }
+
+    .viewProfileBtn,
+    .editProfileBtn,
+    .createProfileBtn {
+        display: block;
+        width: 100%;
+        padding: 14px 20px;
+        margin: 8px 0;
+        flex: 1;
+    }
+
+    .profileLink,
+    .noProfile {
+        text-align: center;
+        padding: 16px;
     }
 }
