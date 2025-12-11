@@ -50,13 +50,13 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding-top: 80px;
+  padding-top: 90px;
   /* Offset for fixed header */
 }
 
 @media (max-width: 480px) {
   body {
-    padding-top: 80px;
+    padding-top: 90px;
   }
 }
 
