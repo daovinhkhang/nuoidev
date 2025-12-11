@@ -62,13 +62,18 @@ create table if not exists comments (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- Votes table
+-- Votes table (one vote per user per profile per day)
 create table if not exists votes (
   id text primary key,
-  profile_id text references profiles(id) on delete cascade,
-  voter_id text not null, -- IP or session ID for anonymous voting
+  profile_id text not null references profiles(id) on delete cascade,
+  user_id text not null references users(id) on delete cascade,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- Create indexes for faster queries
+create index if not exists idx_votes_user_id on votes(user_id);
+create index if not exists idx_votes_profile_id on votes(profile_id);
+create index if not exists idx_votes_created_at on votes(created_at);
 
 -- Chat Messages table
 create table if not exists chat_messages (

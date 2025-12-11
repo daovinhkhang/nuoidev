@@ -55,7 +55,7 @@ const mapPost = (row: any): Post => ({
 const mapVote = (row: any): Vote => ({
     id: row.id,
     profileId: row.profile_id,
-    voterId: row.voter_id,
+    userId: row.user_id,
     createdAt: row.created_at
 });
 
@@ -400,7 +400,7 @@ export async function addVote(vote: Vote): Promise<Vote | null> {
     const row = {
         id: vote.id,
         profile_id: vote.profileId,
-        voter_id: vote.voterId,
+        user_id: vote.userId,
         created_at: vote.createdAt || new Date().toISOString()
     };
     const { data, error } = await supabase.from('votes').insert(row).select().single();
@@ -418,7 +418,7 @@ export async function getVotesForProfile(profileId: string): Promise<number> {
     return count || 0;
 }
 
-export async function hasVotedToday(visitorId: string, profileId: string): Promise<boolean> {
+export async function hasVotedToday(userId: string, profileId: string): Promise<boolean> {
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
     const todayStr = todayStart.toISOString();
@@ -426,14 +426,14 @@ export async function hasVotedToday(visitorId: string, profileId: string): Promi
     const { count, error } = await supabase
         .from('votes')
         .select('*', { count: 'exact', head: true })
-        .eq('voter_id', visitorId)
+        .eq('user_id', userId)
         .eq('profile_id', profileId)
         .gte('created_at', todayStr);
 
     return (count || 0) > 0;
 }
 
-export async function getTodayVoteCount(visitorId: string): Promise<number> {
+export async function getTodayVoteCount(userId: string): Promise<number> {
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
     const todayStr = todayStart.toISOString();
@@ -441,7 +441,7 @@ export async function getTodayVoteCount(visitorId: string): Promise<number> {
     const { count, error } = await supabase
         .from('votes')
         .select('*', { count: 'exact', head: true })
-        .eq('voter_id', visitorId)
+        .eq('user_id', userId)
         .gte('created_at', todayStr);
 
     return count || 0;

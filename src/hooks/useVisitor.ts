@@ -1,32 +1,22 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { generateVisitorId } from '@/lib/utils';
-
-const VISITOR_KEY = 'nuoidev_visitor_id';
 
 export function useVisitor() {
-    const [visitorId, setVisitorId] = useState<string>('');
-    const [remainingVotes, setRemainingVotes] = useState<number>(10);
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+    const [remainingVotes, setRemainingVotes] = useState<number>(0);
 
     useEffect(() => {
-        // Get or create visitor ID
-        let id = localStorage.getItem(VISITOR_KEY);
-        if (!id) {
-            id = generateVisitorId();
-            localStorage.setItem(VISITOR_KEY, id);
-        }
-        setVisitorId(id);
-
-        // Fetch remaining votes
-        fetchRemainingVotes(id);
+        // Fetch remaining votes (requires login)
+        fetchRemainingVotes();
     }, []);
 
-    const fetchRemainingVotes = async (id: string) => {
+    const fetchRemainingVotes = async () => {
         try {
-            const res = await fetch(`/api/votes?visitorId=${id}`);
+            const res = await fetch('/api/votes');
             if (res.ok) {
                 const data = await res.json();
+                setIsLoggedIn(data.isLoggedIn);
                 setRemainingVotes(data.remainingVotes);
             }
         } catch (error) {
@@ -39,7 +29,7 @@ export function useVisitor() {
             const res = await fetch('/api/votes', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ profileId, visitorId }),
+                body: JSON.stringify({ profileId }),
             });
 
             const data = await res.json();
@@ -59,10 +49,8 @@ export function useVisitor() {
     };
 
     const refreshVotes = () => {
-        if (visitorId) {
-            fetchRemainingVotes(visitorId);
-        }
+        fetchRemainingVotes();
     };
 
-    return { visitorId, remainingVotes, vote, refreshVotes };
+    return { isLoggedIn, remainingVotes, vote, refreshVotes };
 }

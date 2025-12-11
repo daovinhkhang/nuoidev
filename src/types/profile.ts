@@ -114,7 +114,7 @@ export interface Comment {
 export interface Vote {
     id: string;
     profileId: string;
-    voterId: string;
+    userId: string;
     createdAt: string;
 }
 

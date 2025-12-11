@@ -5,29 +5,53 @@ import {
     getTodayVoteCount,
     generateId,
     updateProfileVotesAndRank,
-    getProfileById
+    getProfileById,
+    getUserById
 } from '@/lib/db';
-import { Vote } from '@/types/profile';
+import { Vote, UserSession } from '@/types/profile';
 import { MAX_VOTES_PER_DAY } from '@/lib/utils';
 
-// POST - Vote for a profile
+export const dynamic = 'force-dynamic';
+
+// POST - Vote for a profile (only logged-in users)
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { profileId, visitorId } = body;
+        const { profileId } = body;
 
-        if (!profileId || !visitorId) {
+        if (!profileId) {
             return NextResponse.json({ error: 'Thiếu thông tin' }, { status: 400 });
         }
 
-        // Check if profile exists
+        // Get session cookie
+        const sessionCookie = request.cookies.get('session');
+        if (!sessionCookie?.value) {
+            return NextResponse.json({ 
+                error: 'Vui lòng đăng nhập để ủng hộ' 
+            }, { status: 401 });
+        }
+
+        const session: UserSession = JSON.parse(sessionCookie.value);
+        if (!session.userId) {
+            return NextResponse.json({ 
+                error: 'Vui lòng đăng nhập để ủng hộ' 
+            }, { status: 401 });
+        }
+
+        // Cannot vote for yourself
         const profile = await getProfileById(profileId);
         if (!profile) {
             return NextResponse.json({ error: 'Không tìm thấy hồ sơ' }, { status: 404 });
         }
 
+        if (profile.userId === session.userId) {
+            return NextResponse.json({ 
+                error: 'Bạn không thể ủng hộ chính mình!' 
+            }, { status: 400 });
+        }
+
         // Check daily vote limit
-        const todayVotes = await getTodayVoteCount(visitorId);
+        const todayVotes = await getTodayVoteCount(session.userId);
         if (todayVotes >= MAX_VOTES_PER_DAY) {
             return NextResponse.json({
                 error: `Bạn đã hết lượt vote hôm nay (${MAX_VOTES_PER_DAY} lượt/ngày)`,
@@ -36,7 +60,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Check if already voted for this profile today
-        if (await hasVotedToday(visitorId, profileId)) {
+        if (await hasVotedToday(session.userId, profileId)) {
             return NextResponse.json({
                 error: 'Bạn đã ủng hộ người này hôm nay rồi! Quay lại mai nhé~',
                 remainingVotes: MAX_VOTES_PER_DAY - todayVotes
@@ -47,7 +71,7 @@ export async function POST(request: NextRequest) {
         const vote: Vote = {
             id: generateId('vote'),
             profileId,
-            voterId: visitorId,
+            userId: session.userId,
             createdAt: new Date().toISOString(),
         };
 
@@ -67,23 +91,41 @@ export async function POST(request: NextRequest) {
     }
 }
 
-// GET - Get remaining votes for visitor
+// GET - Get remaining votes for current user
 export async function GET(request: NextRequest) {
     try {
-        const { searchParams } = new URL(request.url);
-        const visitorId = searchParams.get('visitorId');
-
-        if (!visitorId) {
-            return NextResponse.json({ remainingVotes: MAX_VOTES_PER_DAY });
+        const sessionCookie = request.cookies.get('session');
+        
+        // If not logged in, return 0 remaining votes
+        if (!sessionCookie?.value) {
+            return NextResponse.json({ 
+                remainingVotes: 0,
+                todayVotes: 0,
+                isLoggedIn: false
+            });
         }
 
-        const todayVotes = await getTodayVoteCount(visitorId);
+        const session: UserSession = JSON.parse(sessionCookie.value);
+        if (!session.userId) {
+            return NextResponse.json({ 
+                remainingVotes: 0,
+                todayVotes: 0,
+                isLoggedIn: false
+            });
+        }
+
+        const todayVotes = await getTodayVoteCount(session.userId);
         return NextResponse.json({
             remainingVotes: Math.max(0, MAX_VOTES_PER_DAY - todayVotes),
-            todayVotes
+            todayVotes,
+            isLoggedIn: true
         });
     } catch (error) {
         console.error('Get votes error:', error);
-        return NextResponse.json({ remainingVotes: MAX_VOTES_PER_DAY });
+        return NextResponse.json({ 
+            remainingVotes: 0,
+            todayVotes: 0,
+            isLoggedIn: false
+        });
     }
 }

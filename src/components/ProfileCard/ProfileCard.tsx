@@ -21,7 +21,7 @@ export default function ProfileCard({ profile, onDelete, showVote = true, rank }
     const [voting, setVoting] = useState(false);
     const [voteMessage, setVoteMessage] = useState('');
     const [localVotes, setLocalVotes] = useState(profile.votes);
-    const { vote, remainingVotes } = useVisitor();
+    const { isLoggedIn, vote, remainingVotes } = useVisitor();
 
     const rankInfo = getRankInfo(profile.rank);
     const isOwner = user && profile.userId === user.id;
@@ -29,6 +29,12 @@ export default function ProfileCard({ profile, onDelete, showVote = true, rank }
     const handleVote = async (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
+
+        if (!isLoggedIn) {
+            setVoteMessage('Vui lòng đăng nhập để ủng hộ');
+            setTimeout(() => setVoteMessage(''), 3000);
+            return;
+        }
 
         if (voting) return;
         setVoting(true);
@@ -95,7 +101,8 @@ export default function ProfileCard({ profile, onDelete, showVote = true, rank }
                         <button
                             className={styles.voteBtn}
                             onClick={handleVote}
-                            disabled={voting || remainingVotes <= 0}
+                            disabled={voting || !isLoggedIn}
+                            title={!isLoggedIn ? 'Vui lòng đăng nhập' : ''}
                         >
                             {voting ? 'Đang...' : 'Ủng Hộ +1'}
                         </button>
